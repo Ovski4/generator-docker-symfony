@@ -1,0 +1,54 @@
+'use strict';
+
+var src              = [],
+    web              = [];
+
+web['style']         = "web/css/";
+src['style']         = ["src/**/Resources/public/scss/**/*.scss", "app/Resources/public/scss/**/*.scss"];
+src['script']        = "src/**/Resources/public/js/**/*.js";
+src['view']          = ["src/**/Resources/views/**/*.twig", "app/Resources/views/**/*.twig"];
+
+var chmod            = require('gulp-chmod'),
+    concat           = require('gulp-concat'),
+    del              = require('del'),
+    gulp             = require('gulp'),
+    minifycss        = require('gulp-minify-css'),
+    rename           = require('gulp-rename'),
+    sass             = require('gulp-sass'),
+    livereload       = require('gulp-livereload')
+    ;
+
+// Task to watch files
+gulp.task('watch', function() {
+    livereload.listen();
+    gulp.watch(src['style'], ['styles']);
+    gulp.watch(src['view'], ['views']);
+    gulp.watch(src['script'], ['scripts']);
+});
+
+// Task to compile Sass files
+gulp.task('styles', function() {
+    // delete ALL css files
+    del(web['style']+'/*.css');
+    // build css files
+    gulp.src(src['style'])
+        .pipe(sass({ errLogToConsole: true }))
+        .pipe(minifycss({keepSpecialComments: 0}))
+        .pipe(concat({ path: 'app.min.css'}))
+        .pipe(chmod(775))
+        .pipe(gulp.dest(web['style']))
+        .pipe(livereload())
+    ;
+});
+
+gulp.task('views', function() {
+    gulp.src(src['view'])
+        .pipe(livereload())
+    ;
+});
+
+gulp.task('scripts', function() {
+    gulp.src(src['script'])
+        .pipe(livereload())
+    ;
+});

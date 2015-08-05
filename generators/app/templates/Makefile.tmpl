@@ -1,0 +1,20 @@
+name = <%= conf.prefix %>_app_1
+
+.PHONY: pac bash bower-install npm-install command
+
+pac:
+	docker exec -it $(name) php app/console $(cmd)
+
+bash:
+	docker exec -it $(name) bash
+
+npm-install:
+	docker exec -it $(name) npm install
+
+bower-install:
+	docker exec -it $(name) bower install --allow-root
+
+command:
+	docker exec -it $(name) $(cmd)
+
+default: pac
